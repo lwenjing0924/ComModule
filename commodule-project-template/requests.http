@@ -1,0 +1,99 @@
+@baseUrl = http://localhost:8080
+
+### 登录
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+> {%
+client.global.set("token", response.body.data.token);
+client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+### 刷新令牌
+POST {{baseUrl}}/api/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+> {%
+client.global.set("token", response.body.data.token);
+client.global.set("refreshToken", response.body.data.refreshToken);
+%}
+
+### 退出登录
+POST {{baseUrl}}/api/auth/logout
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "refreshToken": "{{refreshToken}}"
+}
+
+### 当前用户
+GET {{baseUrl}}/api/auth/me
+Authorization: Bearer {{token}}
+
+### 管理员接口
+GET {{baseUrl}}/api/demo/admin
+Authorization: Bearer {{token}}
+
+### CORS 预检
+OPTIONS {{baseUrl}}/api/demo/me
+Origin: http://localhost:3000
+Access-Control-Request-Method: GET
+
+### 缓存命中
+GET {{baseUrl}}/api/demo/cache/1
+Authorization: Bearer {{token}}
+
+### 发布消息
+POST {{baseUrl}}/api/demo/events/order-created
+Authorization: Bearer {{token}}
+
+### 查看已消费消息
+GET {{baseUrl}}/api/demo/events
+Authorization: Bearer {{token}}
+
+### 数据权限：管理员看到全量，普通用户只看到本人
+GET {{baseUrl}}/api/demo/orders
+Authorization: Bearer {{token}}
+
+### 数据权限分页示例
+GET {{baseUrl}}/api/demo/orders/page
+Authorization: Bearer {{token}}
+
+### 代码生成预览
+POST {{baseUrl}}/api/generator/preview
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "basePackage": "com.example.demo",
+  "className": "UserProfile",
+  "tableName": "user_profile",
+  "description": "用户资料",
+  "fields": [
+    {"name": "nickname", "javaType": "String", "required": true},
+    {"name": "age", "javaType": "Integer", "required": false}
+  ]
+}
+
+### 上传文件
+POST {{baseUrl}}/api/files
+Authorization: Bearer {{token}}
+Content-Type: multipart/form-data; boundary=WebAppBoundary
+
+--WebAppBoundary
+Content-Disposition: form-data; name="file"; filename="hello.txt"
+Content-Type: text/plain
+
+hello commodule
+--WebAppBoundary--
+

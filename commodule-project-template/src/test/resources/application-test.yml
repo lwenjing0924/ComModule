@@ -1,0 +1,9 @@
+commodule:
+  file-storage:
+    base-dir: target/test-storage
+  auth:
+    secret: commodule-test-secret-must-be-at-least-32-bytes
+    issuer: commodule-test
+  mq:
+    retry-backoff: 10ms
+
